@@ -21,8 +21,7 @@ namespace CFG
         [DataMember] public CFG_MEMBER_TYPE FirstElementFieldType; // Used only array, list
         [DataMember] public int LinkContractHash;
     }
-
-    [JsonConverter(typeof(StringEnumConverter))]
+    
     public enum CFG_MEMBER_TYPE
     {
         NONE = 0,
