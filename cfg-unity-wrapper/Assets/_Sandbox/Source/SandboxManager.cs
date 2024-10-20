@@ -10,17 +10,17 @@ namespace _Sandbox.Source
     {
         [CFGMember(Description = "This is simple number")]
         public int Number;
-        
-        [CFGMember] public string Text;
-        
-        [CFGMember(Name = "Boolean Value")] 
-        public bool Flag;
 
-        [CFGMember(Name = "Popf Vasya")] 
-        public Vasya Popf;
-        
+        [CFGMember] public string Text;
+
+        [CFGMember(Name = "Boolean Value")] public bool Flag;
+
+        [CFGMember] public int[] Test2;
+
+        [CFGMember(Name = "Popf Vasya")] public Vasya Popf;
+
         [CFGMember] public Test Test;
-        
+
         [CFGMember] public Test[] Container;
 
         public IConfig GetDefaultConfig()
@@ -35,7 +35,11 @@ namespace _Sandbox.Source
                 {
                     Number2 = 5
                 },
-                Container = new []
+                Test2 = new[]
+                {
+                    5, 7, 8
+                },
+                Container = new[]
                 {
                     new Test
                     {
@@ -53,27 +57,32 @@ namespace _Sandbox.Source
     [CFGContract(Name = "TestNew")]
     public class Test
     {
-        [CFGMember(Description = "Number 2 for example!")] 
+        [CFGMember(Description = "Number 2 for example!")]
         public int Number2;
     }
-    
+
     [CFGContract(Name = "TestNew")]
     public class Vasya
     {
-        [CFGMember(Description = "Number 2 for example!")] 
+        [CFGMember(Description = "Number 2 for example!")]
         public List<Test> TestField;
-        [CFGMember(Description = "Number 2 for example!")] 
+
+        [CFGMember(Description = "Number 2 for example!")]
         public float TestField1;
-        [CFGMember(Description = "Number 2 for example!")] 
+
+        [CFGMember(Description = "Number 2 for example!")]
         public int TestField2;
-        [CFGMember(Description = "Number 2 for example!")] 
+
+        [CFGMember(Description = "Number 2 for example!")]
         public string TestField3;
-        [CFGMember(Description = "Number 2 for example!")] 
+
+        [CFGMember(Description = "Number 2 for example!")]
         public Test TestField4;
-        [CFGMember(Description = "Number 2 for example!")] 
+
+        [CFGMember(Description = "Number 2 for example!")]
         public Test TestField5;
     }
-    
+
     public class SandboxManager : MonoBehaviour
     {
         private async void Start()

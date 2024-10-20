@@ -202,7 +202,7 @@ namespace CFG
                 {
                     Name = cfg_member_attribute.Name ?? field.Name,
                     Description = cfg_member_attribute.Description,
-                    Type = member_type
+                    FieldType = member_type
                 };
 
                 members.Add(meta_info_member);
@@ -213,6 +213,15 @@ namespace CFG
                     var element_type = field.FieldType.IsArray
                         ? field.FieldType.GetElementType()
                         : field.FieldType.GenericTypeArguments[0];
+                    
+                    var element_member_type = GetMemberType(element_type);
+
+                    meta_info_member.FirstElementFieldType = element_member_type;
+                    
+                    if (element_member_type == CFG_MEMBER_TYPE.OBJECT)
+                    {
+                        meta_info_member.LinkContractHash = Hash(element_type);
+                    }
 
                     var contract_attribute = element_type?.GetCustomAttribute<CFGContractAttribute>();
 
@@ -224,13 +233,6 @@ namespace CFG
                     var sub_contracts = CreateContractsInfoByType(element_type, contract_attribute);
 
                     contracts.AddRange(sub_contracts);
-
-                    var element_member_type = GetMemberType(element_type);
-
-                    if (element_member_type == CFG_MEMBER_TYPE.OBJECT)
-                    {
-                        meta_info_member.LinkContractHash = Hash(element_type);
-                    }
                 }
                 else
                 {
@@ -244,6 +246,8 @@ namespace CFG
                     var meta_info_sub_contract = CreateContractsInfoByType(field.FieldType, cfg_contract_attribute);
 
                     contracts.AddRange(meta_info_sub_contract);
+                    
+                    meta_info_member.FirstElementFieldType = member_type;
 
                     if (member_type == CFG_MEMBER_TYPE.OBJECT)
                     {

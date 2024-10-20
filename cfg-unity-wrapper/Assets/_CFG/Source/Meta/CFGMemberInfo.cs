@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace CFG
 {
@@ -15,10 +17,12 @@ namespace CFG
     {
         [DataMember] public string Name;
         [DataMember] public string Description;
-        [DataMember] public CFG_MEMBER_TYPE Type;
+        [DataMember] public CFG_MEMBER_TYPE FieldType;
+        [DataMember] public CFG_MEMBER_TYPE FirstElementFieldType; // Used only array, list
         [DataMember] public int LinkContractHash;
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CFG_MEMBER_TYPE
     {
         NONE = 0,
@@ -26,7 +30,6 @@ namespace CFG
         NUMBER_INTEGER = 2,
         NUMBER = 3,
         ARRAY_OR_LIST = 4,
-        DICTIONARY = 5,
         BOOLEAN = 6,
         OBJECT = 7
     }
