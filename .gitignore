@@ -1,0 +1,4 @@
+﻿cfg-web-panel/node_modules
+cfg-web-panel/.idea
+cfg-web-panel/public/dist
+cfg-web-panel/package-lock.json
