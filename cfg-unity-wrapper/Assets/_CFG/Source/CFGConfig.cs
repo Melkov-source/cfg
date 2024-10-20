@@ -26,7 +26,6 @@ namespace CFG
         private static CFGSettings _settings;
 
         private static Dictionary<int, object> _cfgBsConfigs;
-
         private static Dictionary<int, MethodInfo> _cfgBsConfigNextMethodCashed;
 
         public static async Task InitializeAsync(CancellationToken token, params Assembly[] assemblies)
@@ -132,6 +131,43 @@ namespace CFG
                 meta_info_configs.ToArray(),
                 _settings.CFGGameToken
             );
+        }
+        
+        public static async Task FetchAsync(CancellationToken token)
+        {
+            var configs = await CFGApi.GetConfigsAsync(token, _settings.CFGGameToken);
+
+            for (int index = 0, count = configs.Count; index < count; index++)
+            {
+                var config = configs[index];
+
+                var type = config.GetType();
+
+                var hash = Hash(type);
+
+                var cfg_bs_config = _cfgBsConfigs[hash];
+                var next_method = _cfgBsConfigNextMethodCashed[hash];
+
+                var args = new object[]
+                {
+                    config
+                };
+
+                next_method.Invoke(cfg_bs_config, args);
+            }
+        }
+
+        public static CFGBehaviourSubject<TConfig> Get<TConfig>() where TConfig : IConfig
+        {
+            var type = typeof(TConfig);
+            var hash = Hash(type);
+
+            if (_cfgBsConfigs.TryGetValue(hash, out var cfg_bs_config))
+            {
+                return (CFGBehaviourSubject<TConfig>)cfg_bs_config;
+            }
+
+            return default;
         }
 
         private static List<CFGContractInfo> CreateContractsInfoByType(Type cfg_contract_type,
@@ -245,44 +281,6 @@ namespace CFG
             return CFG_MEMBER_TYPE.NONE;
         }
 
-
-        public static async Task FetchAsync(CancellationToken token)
-        {
-            var configs = await CFGApi.GetConfigsAsync(token, _settings.CFGGameToken);
-
-            for (int index = 0, count = configs.Count; index < count; index++)
-            {
-                var config = configs[index];
-
-                var type = config.GetType();
-
-                var hash = Hash(type);
-
-                var cfg_bs_config = _cfgBsConfigs[hash];
-                var next_method = _cfgBsConfigNextMethodCashed[hash];
-
-                var args = new object[]
-                {
-                    config
-                };
-
-                next_method.Invoke(cfg_bs_config, args);
-            }
-        }
-
-        public static CFGBehaviourSubject<TConfig> Get<TConfig>() where TConfig : IConfig
-        {
-            var type = typeof(TConfig);
-            var hash = Hash(type);
-
-            if (_cfgBsConfigs.TryGetValue(hash, out var cfg_bs_config))
-            {
-                return (CFGBehaviourSubject<TConfig>)cfg_bs_config;
-            }
-
-            return default;
-        }
-
         private static List<Type> GetAllConfigsTypes(Assembly[] assemblies)
         {
             var interface_type = typeof(IConfig);
@@ -367,7 +365,7 @@ namespace CFG
             }
         }
 
-        public static void OnConfigChangedHandle(int hash, IConfig config)
+        private static void OnConfigChangedHandle(int hash, IConfig config)
         {
             if (_cfgBsConfigs.TryGetValue(hash, out var config_behaviour_subject) == false)
             {
