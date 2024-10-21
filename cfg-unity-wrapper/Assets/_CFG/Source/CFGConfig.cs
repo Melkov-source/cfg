@@ -8,18 +8,6 @@ using UnityEngine;
 
 namespace CFG
 {
-    public enum CFG_MODE_TYPE
-    {
-        ONLY_DEFAULT = 0,
-        ONLY_START = 1,
-        EVERY_CHANGE = 2
-    }
-
-    public interface IConfig
-    {
-        public IConfig GetDefaultConfig();
-    }
-
     public static class CFGConfig
     {
         private static CFGClient _client;
@@ -65,13 +53,13 @@ namespace CFG
         {
             _settings = Resources.Load<CFGSettings>("CFGSettings");
 
-            var meta_info_configs = new List<CFGConfigInfo>();
+            var meta_info_configs = new List<CFGConfigMetaInfo>();
 
             var configs_types = GetAllConfigsTypes(assemblies);
 
             for (int index_1 = 0, count_1 = configs_types.Count; index_1 < count_1; index_1++)
             {
-                CFGContractInfo config_contract = default;
+                CFGContractMetaInfo config_contract = default;
 
                 var config_type = configs_types[index_1];
                 var hash = Hash(config_type);
@@ -86,7 +74,7 @@ namespace CFG
 
                 var contracts = CreateContractsInfoByType(config_type, cfg_config_attribute);
 
-                var once_contracts = new List<CFGContractInfo>();
+                var once_contracts = new List<CFGContractMetaInfo>();
 
                 for (int index = 0, count = contracts.Count; index < count; index++)
                 {
@@ -112,7 +100,7 @@ namespace CFG
                     throw new Exception($"Not found CFGConfigAttribute on config type: {config_type.FullName}");
                 }
 
-                var meta_info_config = new CFGConfigInfo
+                var meta_info_config = new CFGConfigMetaInfo
                 {
                     Hash = hash,
                     Name = config_contract.Name,
@@ -157,7 +145,7 @@ namespace CFG
             }
         }
 
-        public static CFGBehaviourSubject<TConfig> Get<TConfig>() where TConfig : IConfig
+        public static CFGBehaviourSubject<TConfig> Get<TConfig>() where TConfig : ICFGConfig
         {
             var type = typeof(TConfig);
             var hash = Hash(type);
@@ -170,11 +158,11 @@ namespace CFG
             return default;
         }
 
-        private static List<CFGContractInfo> CreateContractsInfoByType(Type cfg_contract_type,
+        private static List<CFGContractMetaInfo> CreateContractsInfoByType(Type cfg_contract_type,
             CFGContractAttribute attribute)
         {
-            var contracts = new List<CFGContractInfo>();
-            var members = new List<CFGMemberInfo>();
+            var contracts = new List<CFGContractMetaInfo>();
+            var members = new List<CFGMemberMetaInfo>();
 
             const BindingFlags BINDING_FLAGS = BindingFlags.Public | BindingFlags.Instance;
 
@@ -198,7 +186,7 @@ namespace CFG
                     throw new Exception($"Not found type for member handel: {field.FieldType.FullName}");
                 }
 
-                var meta_info_member = new CFGMemberInfo
+                var meta_info_member = new CFGMemberMetaInfo
                 {
                     Name = cfg_member_attribute.Name ?? field.Name,
                     Description = cfg_member_attribute.Description,
@@ -256,7 +244,7 @@ namespace CFG
                 }
             }
 
-            var root_contract = new CFGContractInfo
+            var root_contract = new CFGContractMetaInfo
             {
                 Hash = Hash(cfg_contract_type),
                 Name = attribute.Name,
@@ -287,7 +275,7 @@ namespace CFG
 
         private static List<Type> GetAllConfigsTypes(Assembly[] assemblies)
         {
-            var interface_type = typeof(IConfig);
+            var interface_type = typeof(ICFGConfig);
 
             var all_types = new List<Type>();
             var configs_types = new List<Type>();
@@ -330,7 +318,7 @@ namespace CFG
 
                 var hash = Hash(type);
 
-                var config = (IConfig)Activator.CreateInstance(type);
+                var config = (ICFGConfig)Activator.CreateInstance(type);
 
                 var default_config = config.GetDefaultConfig();
 
@@ -369,7 +357,7 @@ namespace CFG
             }
         }
 
-        private static void OnConfigChangedHandle(int hash, IConfig config)
+        private static void OnConfigChangedHandle(int hash, ICFGConfig icfgConfig)
         {
             if (_cfgBsConfigs.TryGetValue(hash, out var config_behaviour_subject) == false)
             {
@@ -385,7 +373,7 @@ namespace CFG
 
             var args = new object[]
             {
-                config
+                icfgConfig
             };
 
             next_method.Invoke(config_behaviour_subject, args);

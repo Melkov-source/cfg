@@ -2,7 +2,7 @@
 
 namespace CFG
 {
-    public class CFGBehaviourSubject<TValue>
+    public class CFGBehaviourSubject<TValue> where TValue : ICFGConfig
     {
         public delegate void ChangeBehaviourEvent(TValue old_value, TValue new_value);
         public TValue Value { get; private set; }
