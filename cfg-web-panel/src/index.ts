@@ -1,52 +1,22 @@
+import {Root} from "./elements/root.js";
+import {Client} from "./client/client.js";
 import {Button} from "./elements/button.js";
-import {Element} from "./elements/element.js";
-import {Content} from "./elements/content.js";
-import {Table} from "./elements/table.js";
+import {Q_TYPE} from "./elements/visual-element.js";
 
-const root_container = document.getElementById("root") as HTMLElement;
+const ip: string = "127.0.0.1";
+const port: number = 8080;
 
-const root = new Element(root_container);
+const host = `ws://${ip}:${port}/test`;
 
-const content_buttons = new Content("button-bucket");
+const client = new Client(host);
 
-interface User {
-    name: string,
-    age: number,
-    is_student: boolean
-}
+client.connect();
 
-const table = new Table<User>(["name", "age", "is_student"]);
 
-table.setParent(root);
+const root = new Root();
 
-content_buttons.setParent(root);
+root.Q<Button>("send-button", Q_TYPE.ID, Button)?.onClick(() => {
+    client.sendMessage("Hello Send MAN!");
+});
 
-for (let i = 0; i < 10; i++) {
-    const button = new Button(i, `Button: ${i}`);
 
-    button.root.classList.add("btn");
-    button.root.classList.add("btn-primary");
-
-    const user: User = {
-        name: `Vasya ${i}`,
-        age: i,
-        is_student: i % 2 === 0
-    }
-
-    button.onClick(() => {
-        console.log(i);
-
-        if(button.getParent() === content_buttons) {
-            button.setParent(root)
-            table.add(user);
-        } else {
-            button.setParent(content_buttons);
-            table.remove(user);
-        }
-
-    });
-
-    table.add(user)
-
-    button.setParent(root);
-}
