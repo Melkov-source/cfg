@@ -13,8 +13,12 @@ export class VisualElement {
             throw Error("HTMLElement in null!");
         }
 
-
         this._root = element;
+    }
+
+    public static Div(): VisualElement {
+        const div = document.createElement("div");
+        return new VisualElement(div);
     }
 
     public get root(): HTMLElement {

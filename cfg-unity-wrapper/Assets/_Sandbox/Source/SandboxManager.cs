@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using CFG;
 using UnityEditor;
 using UnityEngine;
@@ -159,10 +160,12 @@ namespace _Sandbox.Source
         
         private async void Start()
         {
-            
-            localPath = Path.Combine(Application.streamingAssetsPath, fileName);
-            StartCoroutine(DownloadFile());
-            
+
+            await CFGConfig.PushConfigsMeta(destroyCancellationToken, Assembly.GetExecutingAssembly());
+
+            /*localPath = Path.Combine(Application.streamingAssetsPath, fileName);
+            StartCoroutine(DownloadFile());*/
+
             /*var assembly = Assembly.GetExecutingAssembly();
 
             await CFGConfig.PushConfigsMeta(destroyCancellationToken, assembly);*/

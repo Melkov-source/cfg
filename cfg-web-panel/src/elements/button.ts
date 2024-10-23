@@ -9,6 +9,14 @@ export class Button extends VisualElement {
         html.onclick = this.clickHandle.bind(this);
     }
 
+    public static Create(text: string): Button {
+        const html = document.createElement("button");
+
+        html.textContent = text;
+
+        return new Button(html);
+    }
+
     public onClick(callback: () => void): void {
         this._callbacks.push(callback);
     }

@@ -7,6 +7,8 @@ export class TextField extends VisualElement {
         super(element);
 
         this._input = this._root as HTMLInputElement;
+
+        this._input.setAttribute("class", "cfg-text-field");
     }
 
     public static Create(): TextField {
@@ -17,6 +19,10 @@ export class TextField extends VisualElement {
 
     public setType(type: string): void {
         this._input.type = type;
+    }
+
+    public setValue(text: string): void {
+        this._input.value = text;
     }
 
     public setPlaceholder(text: string): void {

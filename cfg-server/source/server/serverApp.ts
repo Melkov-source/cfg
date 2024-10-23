@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
-import * as WebSocket from "ws";
-import {WebSocketServer} from "ws"; // Используем * для импорта
+import {WebSocketServer} from "ws";
 
 export class ServerApp {
     private readonly _express: Application;

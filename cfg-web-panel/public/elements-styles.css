@@ -1,0 +1,11 @@
+.cfg-text-field {
+    flex-grow: 1;
+    width: auto; /* Ширина под содержимое */
+    min-width: 50px; /* Минимальная ширина */
+    padding: 5px; /* Отступы */
+    border: 1px solid #ccc; /* Граница */
+    border-radius: 4px; /* Скругление углов */
+    font-size: 15px; /* Размер шрифта */
+    outline: none; /* Убираем обводку при фокусе */
+    font-weight: bold;
+}
