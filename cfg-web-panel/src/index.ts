@@ -66,15 +66,15 @@ const json = `
           {
             "Name": "TestField4",
             "Description": "Number 2 for example!",
-            "FieldType": 7,
-            "FirstElementFieldType": 7,
+            "FieldType": 6,
+            "FirstElementFieldType": 6,
             "LinkContractHash": 1905846514
           },
           {
             "Name": "TestField5",
             "Description": "Number 2 for example!",
-            "FieldType": 7,
-            "FirstElementFieldType": 7,
+            "FieldType": 6,
+            "FirstElementFieldType": 6,
             "LinkContractHash": 1905846514
           }
         ]
@@ -101,7 +101,7 @@ const json = `
       {
         "Name": "Boolean Value",
         "Description": null,
-        "FieldType": 6,
+        "FieldType": 5,
         "FirstElementFieldType": 0,
         "LinkContractHash": 0
       },
@@ -115,28 +115,28 @@ const json = `
       {
         "Name": "Popf Vasya",
         "Description": null,
-        "FieldType": 7,
-        "FirstElementFieldType": 7,
+        "FieldType": 6,
+        "FirstElementFieldType": 6,
         "LinkContractHash": -1318635350
       },
       {
         "Name": "Test",
         "Description": null,
-        "FieldType": 7,
-        "FirstElementFieldType": 7,
+        "FieldType": 6,
+        "FirstElementFieldType": 6,
         "LinkContractHash": 1905846514
       },
       {
         "Name": "Container",
         "Description": null,
         "FieldType": 4,
-        "FirstElementFieldType": 7,
+        "FirstElementFieldType": 6,
         "LinkContractHash": 1905846514
       }
     ]
   }`;
 
-interface ICFGConfigMetaInfo {
+interface ICFGConfigMetaInfo extends ICFGContractMetaInfo {
     Group: string,
     Contracts: ICFGContractMetaInfo[]
 }
@@ -162,8 +162,8 @@ enum CFG_MEMBER_TYPE {
     NUMBER_INTEGER = 2,
     NUMBER = 3,
     ARRAY_OR_LIST = 4,
-    BOOLEAN = 6,
-    OBJECT = 7
+    BOOLEAN = 5,
+    OBJECT = 6
 }
 
 const config_meta: ICFGConfigMetaInfo = JSON.parse(json);
@@ -177,24 +177,48 @@ const root = new Root();
 
 const content = root.Q<VisualElement>("scene-content", Q_TYPE.CLASS, VisualElement);
 
-const func_resolve_object = (object: any) => {
-    const keys = Object.keys(object);
-
+const draw_contract = (contract: ICFGContractMetaInfo) => {
     const container = VisualElement.Div();
-
     container.setParent(content!);
+    container.setStyle({
+        margin: "10px 0 10px 5px"
+    })
 
-    for (const key of keys) {
-        const value = object[key];
+    const title_label = Label.Create();
+    title_label.setParent(container);
+    title_label.setText(contract.Name);
+    title_label.setStyle({
+        color: "#FFFFFF",
+        fontWeight: "bold"
+    })
 
-        const keyValue = new KeyValue(key, value);
+    const members_container = VisualElement.Div();
+    members_container.setParent(container);
+    members_container.setStyle({
+        background: "rgba(0,0,0,0.21)",
+        width: "450px",
+        padding: "5px"
+    });
 
-        keyValue.setParent(container!);
-        keyValue.setStyle({
-            justifyContent: "space-between",
-            display: "flex"
-        });
+    for (const member of contract.Members) {
+        const member_view = create_view_member(member);
+
+        if(!member_view) {
+            const error_label = Label.Create();
+            error_label.setParent(members_container);
+
+            const type = Object.keys(CFG_MEMBER_TYPE).find(key => (CFG_MEMBER_TYPE as any)[key] === member.FieldType);
+
+            error_label.setText(`Error: field: ${type}, member: ${member.Name}`);
+            error_label.setStyle({
+                color: "#ff0000"
+            })
+            continue;
+        }
+
+        member_view.setParent(members_container);
     }
+
 }
 
 export class KeyValue extends VisualElement {
@@ -224,7 +248,39 @@ export class KeyValue extends VisualElement {
     }
 }
 
-func_resolve_object(config_meta);
+const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefined => {
+    switch (member.FieldType) {
+        case CFG_MEMBER_TYPE.STRING:
+        case CFG_MEMBER_TYPE.NUMBER_INTEGER:
+        case CFG_MEMBER_TYPE.NUMBER:
+            const keyValue = new KeyValue(member.Name, "");
+            keyValue.setStyle({
+                justifyContent: "space-between",
+                display: "flex"
+            });
+
+            return keyValue;
+        case CFG_MEMBER_TYPE.BOOLEAN:
+            break;
+        case CFG_MEMBER_TYPE.OBJECT:
+            break;
+        case CFG_MEMBER_TYPE.ARRAY_OR_LIST:
+            break;
+
+        case CFG_MEMBER_TYPE.NONE:
+        default:
+            break;
+    }
+
+    return undefined;
+}
+
+draw_contract(config_meta);
+draw_contract(config_meta);
+draw_contract(config_meta);
+draw_contract(config_meta);
+draw_contract(config_meta);
+draw_contract(config_meta);
 
 
 
