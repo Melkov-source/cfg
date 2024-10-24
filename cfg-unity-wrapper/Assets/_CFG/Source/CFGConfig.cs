@@ -157,7 +157,7 @@ namespace CFG
 
             return default;
         }
-
+        
         private static List<CFGContractMetaInfo> CreateContractsInfoByType(Type cfg_contract_type,
             CFGContractAttribute attribute)
         {

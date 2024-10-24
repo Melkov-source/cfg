@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -160,9 +161,14 @@ namespace _Sandbox.Source
         
         private async void Start()
         {
-
             await CFGConfig.PushConfigsMeta(destroyCancellationToken, Assembly.GetExecutingAssembly());
 
+            /*CFGConfigRemote.GetInt("test");
+            CFGConfigRemote.GetString("test");
+            CFGConfigRemote.GetFloat("test");
+            CFGConfigRemote.GetBoolean("test");
+            CFGConfigRemote.GetJSON("test");*/
+            
             /*localPath = Path.Combine(Application.streamingAssetsPath, fileName);
             StartCoroutine(DownloadFile());*/
 

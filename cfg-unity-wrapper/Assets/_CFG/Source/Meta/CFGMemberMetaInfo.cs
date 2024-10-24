@@ -10,5 +10,6 @@ namespace CFG
         [DataMember] public CFG_MEMBER_TYPE FieldType;
         [DataMember] public CFG_MEMBER_TYPE FirstElementFieldType; // Used only array, list
         [DataMember] public int LinkContractHash;
+        [DataMember] public object DefaultValue;
     }
 }
