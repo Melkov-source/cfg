@@ -8,10 +8,4 @@ namespace CFG
     {
         [DataMember] public string Group;
     }
-    
-    public class CFGConfigInfo : CFGContractInfo
-    {
-        [DataMember] public string Group;
-        [DataMember] public CFGContractInfo[] Contracts;
-    }
 }

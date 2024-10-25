@@ -1,12 +1,12 @@
 import 'dotenv/config';
 import {Database} from "../services/index.js";
-import {Server} from "../server/index.js";
+import {ServerApp} from "../server/index.js";
 import {EventDispatcher} from "../services/event-dispatcher/event-dispatcher.js";
 
 type Task = () => Promise<number>
 
 export class App {
-    private static declare _server: Server;
+    private static declare _server: ServerApp;
     private static declare _database: Database;
 
     private static _tasks: Map<string, Task> = new Map<string, Task>();
@@ -29,7 +29,7 @@ export class App {
 
         this._tasks.set("rest-api server launching", async () => {
             const port = parseInt(process.env.REST_API_PORT!);
-            this._server = new Server(port);
+            this._server = new ServerApp(port);
 
             this._server.start();
 

@@ -6,7 +6,7 @@ namespace CFG
 {
     public class CFGClient
     {
-        public delegate void OnConfigChanged(int hash, IConfig config);
+        public delegate void OnConfigChanged(int hash, ICFGConfig icfgConfig);
 
         public event OnConfigChanged OnChanged;
         

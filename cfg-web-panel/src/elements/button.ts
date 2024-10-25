@@ -1,16 +1,20 @@
-import {Element} from "./element.js";
+import {VisualElement} from "./visual-element.js";
 
-export class Button extends Element {
+export class Button extends VisualElement {
     private _callbacks: (() => void)[] = [];
 
-    public constructor(id: number, text: string) {
-        const button =  document.createElement('button');
-        super(button);
+    public constructor(html: HTMLElement) {
+        super(html);
 
-        button.setAttribute("id", id.toString());
-        button.setAttribute("type", "button");
-        button.innerText = text;
-        button.onclick = this.clickHandle.bind(this);
+        html.onclick = this.clickHandle.bind(this);
+    }
+
+    public static Create(text: string): Button {
+        const html = document.createElement("button");
+
+        html.textContent = text;
+
+        return new Button(html);
     }
 
     public onClick(callback: () => void): void {
