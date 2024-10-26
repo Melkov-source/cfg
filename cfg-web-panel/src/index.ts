@@ -41,7 +41,7 @@ const json = `
             "Name": "TestField",
             "Description": "Number 2 for example!",
             "FieldType": 4,
-            "FirstElementFieldType": 7,
+            "FirstElementFieldType": 6,
             "LinkContractHash": 1905846514
           },
           {
@@ -349,9 +349,10 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
 
             arrayDiv.setStyle({
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                flexDirection: "row", // Упорядочиваем элементы в столбик
                 padding: "5px",
+                justifyContent: "space-between",
+                alignItems: "top",
             });
 
             const headerLabel = Label.Create();
@@ -364,15 +365,51 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
                 marginRight: "10px",
             });
 
+            const container_list = VisualElement.Div();
+            container_list.setParent(arrayDiv);
+
+            container_list.setStyle({
+                display: "flex",
+                flexDirection: "column",
+            })
+
             const addButton = Button.Create("+");
-            addButton.setParent(arrayDiv);
+            addButton.setParent(container_list);
             addButton.setStyle({
-                marginLeft: "10px",
+                width: "30px",
+                height: "30px",
+                marginLeft: "auto"
+            })
+
+            // Контейнер для элементов массива
+            const itemContainer = VisualElement.Div();
+            itemContainer.setParent(container_list);
+            itemContainer.setStyle({
+                marginTop: "5px", // Отступ между заголовком и контейнером,
+                display: "flex",
+                flexDirection: "column",
+                width: "auto"
             });
+
+            let itemCount = 0; // Счетчик элементов
 
             addButton.onClick(() => {
+                itemCount++; // Увеличиваем счетчик
+                headerLabel.setText(`${member.Name} (${itemCount})`); // Обновляем заголовок
 
+                const item: ICFGMemberMetaInfo = {
+                    Name: itemCount.toString(),
+                    FieldType: member.FirstElementFieldType,
+                    LinkContractHash: member.LinkContractHash,
+                    FirstElementFieldType: CFG_MEMBER_TYPE.NONE,
+                    Description: ""
+                }
+
+                const item_view = create_view_member(item);
+
+                item_view?.setParent(itemContainer);
             });
+
 
             return arrayDiv;
 
