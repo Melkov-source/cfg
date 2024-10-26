@@ -371,7 +371,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
             });
 
             addButton.onClick(() => {
-                
+
             });
 
             return arrayDiv;
