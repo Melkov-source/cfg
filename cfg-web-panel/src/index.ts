@@ -298,6 +298,7 @@ export class KeyValueObject extends VisualElement {
             justifyContent: "space-between",
             alignItems: "top",
             padding: "5px",
+            flexDirection: "column"
         });
 
         const label = Label.Create();
