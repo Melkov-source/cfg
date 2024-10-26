@@ -7,7 +7,7 @@
         NUMBER_INTEGER = 2,
         NUMBER = 3,
         ARRAY_OR_LIST = 4,
-        BOOLEAN = 6,
-        OBJECT = 7
+        BOOLEAN = 5,
+        OBJECT = 6
     }
 }
