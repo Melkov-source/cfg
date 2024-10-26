@@ -184,7 +184,7 @@ const draw_contract = (contract: ICFGContractMetaInfo, content_to: VisualElement
     container.setParent(content_to!);
     container.setStyle({
         margin: "10px 0 10px 5px",
-        width: "auto"
+        width: "100%"
     })
 
     if(draw_name) {
@@ -237,7 +237,7 @@ export class KeyValueTextField extends VisualElement {
 
         div.setStyle({
             display: "flex",
-            justifyContent: "space-between", // Расположение элементов по краям
+            justifyContent: "left", // Расположение элементов по краям
             alignItems: "center", // Вертикальное выравнивание по центру
             padding: "5px", // Отступы для лучшего восприятия
         });
@@ -265,7 +265,7 @@ export class KeyValueCheckbox extends VisualElement {
 
         div.setStyle({
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "left",
             alignItems: "center",
             padding: "5px",
         });
@@ -326,7 +326,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
         case CFG_MEMBER_TYPE.NUMBER:
             const keyValue = new KeyValueTextField(member.Name);
             keyValue.setStyle({
-                justifyContent: "space-between",
+                justifyContent: "left",
                 display: "flex",
             });
             return keyValue;
@@ -334,7 +334,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
         case CFG_MEMBER_TYPE.BOOLEAN:
             const keyValueCheckbox = new KeyValueCheckbox(member.Name);
             keyValueCheckbox.setStyle({
-                justifyContent: "space-between",
+                justifyContent: "left",
                 display: "flex",
             });
             return keyValueCheckbox;
@@ -350,14 +350,21 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
 
             arrayDiv.setStyle({
                 display: "flex",
-                flexDirection: "row", // Упорядочиваем элементы в столбик
+                flexDirection: "column", // Упорядочиваем элементы в столбик
                 padding: "5px",
-                justifyContent: "space-between",
+                //justifyContent: "space-between",
                 alignItems: "top",
             });
 
+            const top = VisualElement.Div();
+            top.setParent(arrayDiv);
+
+            const down = VisualElement.Div();
+            down.setParent(arrayDiv);
+
+
             const headerLabel = Label.Create();
-            headerLabel.setParent(arrayDiv);
+            headerLabel.setParent(top);
             headerLabel.setText(`${member.Name} (0)`); // Показать количество элементов (пока 0)
 
             headerLabel.setStyle({
@@ -366,16 +373,8 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
                 marginRight: "10px",
             });
 
-            const container_list = VisualElement.Div();
-            container_list.setParent(arrayDiv);
-
-            container_list.setStyle({
-                display: "flex",
-                flexDirection: "column",
-            })
-
             const addButton = Button.Create("+");
-            addButton.setParent(container_list);
+            addButton.setParent(top);
             addButton.setStyle({
                 width: "30px",
                 height: "30px",
@@ -384,7 +383,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
 
             // Контейнер для элементов массива
             const itemContainer = VisualElement.Div();
-            itemContainer.setParent(container_list);
+            itemContainer.setParent(down);
             itemContainer.setStyle({
                 marginTop: "5px", // Отступ между заголовком и контейнером,
                 display: "flex",
@@ -399,7 +398,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
                 headerLabel.setText(`${member.Name} (${itemCount})`); // Обновляем заголовок
 
                 const item: ICFGMemberMetaInfo = {
-                    Name: "",
+                    Name: itemCount.toString(),
                     FieldType: member.FirstElementFieldType,
                     LinkContractHash: member.LinkContractHash,
                     FirstElementFieldType: CFG_MEMBER_TYPE.NONE,
@@ -407,6 +406,12 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
                 }
 
                 const item_view = create_view_member(item);
+
+                item_view?.setStyle({
+                    flexDirection: "row",
+                    justifyContent: "left",
+                    alignItems: "center"
+                })
 
                 item_view?.setParent(itemContainer);
             });
