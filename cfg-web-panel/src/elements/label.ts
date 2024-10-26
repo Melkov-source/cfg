@@ -9,13 +9,13 @@ export class Label extends VisualElement {
         this._label = html as HTMLLabelElement;
     }
 
-    public setText(text: string): void {
-        this._label.textContent = text;
-    }
-
     public static Create() {
         const label = document.createElement('label');
 
         return new Label(label);
+    }
+
+    public setText(text: string): void {
+        this._label.textContent = text;
     }
 }

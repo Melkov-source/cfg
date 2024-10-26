@@ -1,12 +1,22 @@
 .cfg-text-field {
     width: auto;
-    min-width: 50px;
+    min-width: 300px;
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 3px solid #ccc;
     border-radius: 4px;
     font-size: 15px;
     outline: none;
-    font-weight: bold;
+}
+
+.cfg-checkbox {
+    width: auto;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 5px;
+    border: 3px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    outline: none;
 }
 
 input:focus  {

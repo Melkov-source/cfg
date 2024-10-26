@@ -1,4 +1,4 @@
-import { VisualElement, Q_TYPE } from "./visual-element.js";
+import { VisualElement } from "./visual-element.js";
 
 export class Root extends VisualElement {
     public constructor() {

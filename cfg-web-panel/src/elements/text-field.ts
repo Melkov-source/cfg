@@ -1,14 +1,12 @@
-import {VisualElement} from "./visual-element.js";
+import {Input} from "./input.js";
 
-export class TextField extends VisualElement {
-    private _input: HTMLInputElement;
-
+export class TextField extends Input {
     public constructor(element: HTMLElement | null) {
         super(element);
 
-        this._input = this._root as HTMLInputElement;
+        this.input.setAttribute("class", "cfg-text-field");
 
-        this._input.setAttribute("class", "cfg-text-field");
+        this.setType("text");
     }
 
     public static Create(): TextField {
@@ -17,15 +15,11 @@ export class TextField extends VisualElement {
         return new TextField(input);
     }
 
-    public setType(type: string): void {
-        this._input.type = type;
-    }
-
     public setValue(text: string): void {
-        this._input.value = text;
+        this.input.value = text;
     }
 
     public setPlaceholder(text: string): void {
-        this._input.placeholder = text;
+        this.input.placeholder = text;
     }
 }

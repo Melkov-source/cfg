@@ -2,6 +2,8 @@ import {Root} from "./elements/root.js";
 import {Q_TYPE, VisualElement} from "./elements/visual-element.js";
 import {Label} from "./elements/label.js";
 import {TextField} from "./elements/text-field.js";
+import {CheckBox} from "./elements/check-box.js";
+import {Button} from "./elements/button.js";
 
 /*const ip: string = "127.0.0.1";
 const port: number = 8080;
@@ -175,33 +177,41 @@ const root = new Root();
 
 });*/
 
-const content = root.Q<VisualElement>("scene-content", Q_TYPE.CLASS, VisualElement);
+const content = root.Q<VisualElement>("scene-content", Q_TYPE.CLASS, VisualElement)!;
 
-const draw_contract = (contract: ICFGContractMetaInfo) => {
+const draw_contract = (contract: ICFGContractMetaInfo, content_to: VisualElement, draw_name: boolean = true) => {
     const container = VisualElement.Div();
-    container.setParent(content!);
+    container.setParent(content_to!);
     container.setStyle({
-        margin: "10px 0 10px 5px"
+        margin: "10px 0 10px 5px",
+        width: "auto"
     })
 
-    const title_label = Label.Create();
-    title_label.setParent(container);
-    title_label.setText(contract.Name);
-    title_label.setStyle({
-        color: "#FFFFFF",
-        fontWeight: "bold"
-    })
+    if(draw_name) {
+        const title_label = Label.Create();
+        title_label.setParent(container);
+        title_label.setText(contract.Name);
+        title_label.setStyle({
+            color: "#FFFFFF",
+            fontWeight: "bold"
+        })
+    }
+
 
     const members_container = VisualElement.Div();
     members_container.setParent(container);
     members_container.setStyle({
         background: "rgba(0,0,0,0.21)",
-        width: "450px",
-        padding: "5px"
+        width: "auto",
+        padding: "5px",
     });
 
     for (const member of contract.Members) {
         const member_view = create_view_member(member);
+
+        member_view?.setStyle({
+            marginBottom: "10px"
+        })
 
         if(!member_view) {
             const error_label = Label.Create();
@@ -221,13 +231,16 @@ const draw_contract = (contract: ICFGContractMetaInfo) => {
 
 }
 
-export class KeyValue extends VisualElement {
-    public constructor(key: string, value: string | number | boolean) {
+export class KeyValueTextField extends VisualElement {
+    public constructor(key: string) {
         const div = VisualElement.Div();
 
         div.setStyle({
-            display: "flex"
-        })
+            display: "flex",
+            justifyContent: "space-between", // Расположение элементов по краям
+            alignItems: "center", // Вертикальное выравнивание по центру
+            padding: "5px", // Отступы для лучшего восприятия
+        });
 
         const label = Label.Create();
         label.setParent(div);
@@ -236,36 +249,132 @@ export class KeyValue extends VisualElement {
         label.setStyle({
             color: "#FFFFFF",
             fontWeight: "bold",
-            margin: "5px",
-        })
+            marginRight: "10px", // Отступ между меткой и полем ввода
+        });
 
         const input = TextField.Create();
         input.setParent(div);
-        input.setValue(value.toString());
-
 
         super(div.root);
     }
 }
+
+export class KeyValueCheckbox extends VisualElement {
+    public constructor(key: string) {
+        const div = VisualElement.Div();
+
+        div.setStyle({
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "5px",
+        });
+
+        const label = Label.Create();
+        label.setParent(div);
+        label.setText(key);
+
+        label.setStyle({
+            color: "#FFFFFF",
+            fontWeight: "bold",
+            marginRight: "10px",
+        });
+
+        const input = CheckBox.Create();
+        input.setParent(div);
+
+        super(div.root);
+    }
+}
+
+export class KeyValueObject extends VisualElement {
+    public readonly container: VisualElement;
+
+    public constructor(key: string) {
+        const div = VisualElement.Div();
+
+        div.setStyle({
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "top",
+            padding: "5px",
+        });
+
+        const label = Label.Create();
+        label.setParent(div);
+        label.setText(key);
+
+        label.setStyle({
+            color: "#FFFFFF",
+            fontWeight: "bold",
+            marginRight: "10px",
+        });
+
+        super(div.root);
+
+        this.container = VisualElement.Div();
+        this.container.setParent(div);
+    }
+}
+
 
 const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefined => {
     switch (member.FieldType) {
         case CFG_MEMBER_TYPE.STRING:
         case CFG_MEMBER_TYPE.NUMBER_INTEGER:
         case CFG_MEMBER_TYPE.NUMBER:
-            const keyValue = new KeyValue(member.Name, "");
+            const keyValue = new KeyValueTextField(member.Name);
             keyValue.setStyle({
                 justifyContent: "space-between",
-                display: "flex"
+                display: "flex",
+            });
+            return keyValue;
+
+        case CFG_MEMBER_TYPE.BOOLEAN:
+            const keyValueCheckbox = new KeyValueCheckbox(member.Name);
+            keyValueCheckbox.setStyle({
+                justifyContent: "space-between",
+                display: "flex",
+            });
+            return keyValueCheckbox;
+
+        case CFG_MEMBER_TYPE.OBJECT:
+            const t = new KeyValueObject(member.Name);
+            const contract = config_meta.Contracts.find(c => c.Hash === member.LinkContractHash)!;
+            draw_contract(contract, t.container, false);
+            return t;
+
+        case CFG_MEMBER_TYPE.ARRAY_OR_LIST:
+            const arrayDiv = VisualElement.Div();
+
+            arrayDiv.setStyle({
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "5px",
             });
 
-            return keyValue;
-        case CFG_MEMBER_TYPE.BOOLEAN:
-            break;
-        case CFG_MEMBER_TYPE.OBJECT:
-            break;
-        case CFG_MEMBER_TYPE.ARRAY_OR_LIST:
-            break;
+            const headerLabel = Label.Create();
+            headerLabel.setParent(arrayDiv);
+            headerLabel.setText(`${member.Name} (0)`); // Показать количество элементов (пока 0)
+
+            headerLabel.setStyle({
+                color: "#FFFFFF",
+                fontWeight: "bold",
+                marginRight: "10px",
+            });
+
+            const addButton = Button.Create("+");
+            addButton.setParent(arrayDiv);
+            addButton.setStyle({
+                marginLeft: "10px",
+            });
+
+            addButton.onClick(() => {
+                
+            });
+
+            return arrayDiv;
 
         case CFG_MEMBER_TYPE.NONE:
         default:
@@ -273,14 +382,16 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
     }
 
     return undefined;
-}
+};
 
-draw_contract(config_meta);
-draw_contract(config_meta);
-draw_contract(config_meta);
-draw_contract(config_meta);
-draw_contract(config_meta);
-draw_contract(config_meta);
+
+
+draw_contract(config_meta, content);
+draw_contract(config_meta, content);
+draw_contract(config_meta, content);
+draw_contract(config_meta, content);
+draw_contract(config_meta, content);
+draw_contract(config_meta, content);
 
 
 
