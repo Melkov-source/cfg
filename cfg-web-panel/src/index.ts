@@ -399,7 +399,7 @@ const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefin
                 headerLabel.setText(`${member.Name} (${itemCount})`); // Обновляем заголовок
 
                 const item: ICFGMemberMetaInfo = {
-                    Name: itemCount.toString(),
+                    Name: "",
                     FieldType: member.FirstElementFieldType,
                     LinkContractHash: member.LinkContractHash,
                     FirstElementFieldType: CFG_MEMBER_TYPE.NONE,
