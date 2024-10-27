@@ -4,8 +4,9 @@ import {CFGConfig, ICFGConfig} from "../../cfg/scripts/cfg-config";
 
 @_decorator.ccclass("SandboxManager")
 export class SandboxManager extends Component{
-    protected override start(): void {
-        console.log(CFGConfig.getAllConfigsTypes());
+    protected override async start(): Promise<void> {
+        await CFGConfig.collectConfigsBehaviours();
+        CFGConfig.testConfigMethods();
     }
 }
 

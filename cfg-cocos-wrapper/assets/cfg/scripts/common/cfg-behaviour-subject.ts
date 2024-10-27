@@ -1,4 +1,4 @@
-import { ICFGConfig } from "../cfg-config";
+import {ICFGConfig} from "../cfg-config";
 
 type Callback<TObject> =  (value: TObject) => void
 type CallbackWithOld<TObject> =  (old_value: TObject, new_value: TObject) => void
@@ -41,6 +41,11 @@ export class CFGBehaviourSubject<TObject extends ICFGConfig> {
 
             callback(this.value, this.value);
         }
+    }
+
+    //this is just for the test
+    public checkBehaviourBind(): void {
+        console.log("Check behaviour was invoked");
     }
 
     public subscribe(callback: Callback<TObject>): void {
