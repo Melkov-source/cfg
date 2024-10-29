@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using System.Reflection;
+using System.Threading;
+using UnityEditor;
 using UnityEngine;
 
 namespace CFG
@@ -20,6 +23,13 @@ namespace CFG
         private static void OnAfterAssemblyReload()
         {
             Debug.Log("После перекомпиляции");
+
+            var cts = new CancellationTokenSource();
+            
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            
+            CFGConfig.PushConfigsMeta(cts.Token, assemblies);
         }
     }
 }
