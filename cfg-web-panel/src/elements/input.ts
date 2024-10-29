@@ -1,7 +1,7 @@
 import {VisualElement} from "./visual-element.js";
 
 export class Input extends VisualElement {
-    protected input: HTMLInputElement;
+    public input: HTMLInputElement;
 
     public constructor(element: HTMLElement | null) {
         super(element);

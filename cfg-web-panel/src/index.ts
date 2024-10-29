@@ -206,6 +206,8 @@ const draw_contract = (contract: ICFGContractMetaInfo, content_to: VisualElement
         padding: "5px",
     });
 
+    const object_temp: any = {};
+
     for (const member of contract.Members) {
         const member_view = create_view_member(member);
 
@@ -232,7 +234,7 @@ const draw_contract = (contract: ICFGContractMetaInfo, content_to: VisualElement
 }
 
 export class KeyValueTextField extends VisualElement {
-    public constructor(key: string) {
+    public constructor(key: string, ref: any) {
         const div = VisualElement.Div();
 
         div.setStyle({
@@ -254,6 +256,12 @@ export class KeyValueTextField extends VisualElement {
 
         const input = TextField.Create();
         input.setParent(div);
+
+        input.input.addEventListener("change", () => {
+            ref.value = input.input.value;
+
+            console.log(ref);
+        })
 
         super(div.root);
     }
@@ -320,11 +328,15 @@ export class KeyValueObject extends VisualElement {
 
 
 const create_view_member = (member: ICFGMemberMetaInfo): VisualElement | undefined => {
+    const member_data: any = {};
+
+    member_data["value"] = undefined;
+
     switch (member.FieldType) {
         case CFG_MEMBER_TYPE.STRING:
         case CFG_MEMBER_TYPE.NUMBER_INTEGER:
         case CFG_MEMBER_TYPE.NUMBER:
-            const keyValue = new KeyValueTextField(member.Name);
+            const keyValue = new KeyValueTextField(member.Name, member_data);
             keyValue.setStyle({
                 justifyContent: "left",
                 display: "flex",
